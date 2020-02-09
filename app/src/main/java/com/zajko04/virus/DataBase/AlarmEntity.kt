@@ -3,6 +3,7 @@ package com.zajko04.virus.DataBase
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.util.*
 
 @Entity(tableName = "AlarmsTable")
 data class AlarmEntity(

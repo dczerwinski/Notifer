@@ -7,6 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import java.util.*
 
 @Database(entities = [AlarmEntity::class],version = 1)
 abstract class AlarmEntityDatabase: RoomDatabase() {
@@ -42,9 +43,16 @@ abstract class AlarmEntityDatabase: RoomDatabase() {
             INSTANCE?.let { alarmEntityDatabase ->
                 scope.launch {
                     val list: List<AlarmEntity> = listOf(
-                        AlarmEntity("Title","Contents","Time")
-                    )
-
+                        AlarmEntity(
+                            "jeden",
+                            "jeden",
+                            "2020-02-08-18-52-00"
+                        ),
+                        AlarmEntity(
+                            "dwa",
+                        "dwa",
+                        "2020-02-08-18-54-00"
+                        ))
                     Thread(Runnable {
                         alarmEntityDatabase.alarmDao().insertAllAlarms(list)
                     }).start()

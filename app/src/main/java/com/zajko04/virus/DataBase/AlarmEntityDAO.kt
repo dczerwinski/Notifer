@@ -3,11 +3,13 @@ package com.zajko04.virus.DataBase
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.TypeConverter
+import java.util.*
 
 @Dao
 interface  AlarmEntityDAO {
     //select
-    @Query("select * from AlarmsTable order by mTime asc")
+    @Query("select * from AlarmsTable")
     fun getAllAlarms(): List<AlarmEntity>
 
     //update
@@ -27,4 +29,5 @@ interface  AlarmEntityDAO {
 
     @Query("delete from AlarmsTable where mAlarmID like :mAlarmID")
     fun deleteAlarmByID(mAlarmID: Int)
+
 }
