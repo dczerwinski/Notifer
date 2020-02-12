@@ -24,11 +24,38 @@ class NotificationUtil(context: Context) {
         val mBuilder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setContentTitle(myNotification.title)
             .setContentText(myNotification.text)
-            .setAutoCancel(true)
             .setSmallIcon(R.drawable.ic_launcher_background)
             .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setAutoCancel(true) // makes auto cancel of notification
             .setChannelId(CHANNEL_ID)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setPriority(NotificationCompat.PRIORITY_HIGH) //set priority of notification
+
+        val notification: Notification = mBuilder.build()
+
+        val intent = Intent(context,MyNotificationPublisher::class.java)
+        intent.putExtra(MyNotificationPublisher.NOTIFICATION_ID, myNotification.notificationID)
+        intent.putExtra(MyNotificationPublisher.NOTIFICATION,notification)
+        val pendingIntent = PendingIntent.getBroadcast(context,myNotification.notificationID,intent,PendingIntent.FLAG_CANCEL_CURRENT)
+        val calendar = Calendar.getInstance()
+        Log.d("VIRUZ","${System.currentTimeMillis()}  vs  ${myNotification.calendar.timeInMillis}" )
+
+        val alarmManager: AlarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarmManager.set(AlarmManager.RTC_WAKEUP, myNotification.calendar.timeInMillis, pendingIntent)
+    }
+
+    fun sendNotifiNOW(context: Context, alarmEntity: AlarmEntity){
+
+        val myNotification = MyNotification(alarmEntity)
+        val mBuilder = NotificationCompat.Builder(context, CHANNEL_ID)
+            .setContentTitle(myNotification.title)
+            .setContentText(myNotification.text)
+            .setSmallIcon(R.drawable.ic_launcher_background)
+            .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setAutoCancel(true) // makes auto cancel of notification
+            .setChannelId(CHANNEL_ID)
+            .setPriority(NotificationCompat.PRIORITY_HIGH) //set priority of notification
 
         val notification: Notification = mBuilder.build()
 
@@ -38,23 +65,7 @@ class NotificationUtil(context: Context) {
         val pendingIntent = PendingIntent.getBroadcast(context,myNotification.notificationID,intent,PendingIntent.FLAG_CANCEL_CURRENT)
 
         val alarmManager: AlarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, myNotification.timeInMilis, pendingIntent)
-    }
-
-    fun sendNotifiNOW(context: Context, alarmEntity: AlarmEntity){
-
-        val mBuilder = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setContentTitle("title")
-            .setContentText("TEXT")
-            .setSmallIcon(R.drawable.ic_launcher_background)
-            .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-            .setAutoCancel(true) // makes auto cancel of notification
-            .setChannelId(CHANNEL_ID)
-            .setPriority(NotificationCompat.PRIORITY_HIGH) //set priority of notification
-
-        Log.d("VIRUZ","SEND")
-        notificationManager?.notify(0,mBuilder.build())
+        alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), pendingIntent)
     }
 
     @RequiresApi(VERSION_CODES.O)
@@ -74,8 +85,8 @@ class NotificationUtil(context: Context) {
     private class MyNotification{
         var title: String
         var text: String
-        var timeInMilis: Long
         var notificationID: Int
+        val calendar: Calendar
 
         @SuppressLint("SimpleDateFormat")
         constructor(alarmEntity: AlarmEntity){
@@ -84,12 +95,21 @@ class NotificationUtil(context: Context) {
             this.notificationID = alarmEntity.mAlarmID
             val date = alarmEntity.mTime.split("-")
             val calendar = Calendar.getInstance()
+            calendar.timeInMillis = System.currentTimeMillis()
             calendar.set(Calendar.YEAR,date[0].toInt())
-            calendar.set(Calendar.MONTH,date[1].toInt())
+            calendar.set(Calendar.MONTH,date[1].toInt()-1)
             calendar.set(Calendar.DAY_OF_MONTH,date[2].toInt())
             calendar.set(Calendar.HOUR_OF_DAY,date[3].toInt())
             calendar.set(Calendar.MINUTE,date[4].toInt())
-            this.timeInMilis = calendar.timeInMillis
+
+            Log.d("VIRUZ", "" +
+                    "${calendar.get(Calendar.YEAR)}-" +
+                    "${calendar.get(Calendar.MONTH)}-" +
+                    "${calendar.get(Calendar.DAY_OF_MONTH)}-" +
+                    "${calendar.get(Calendar.HOUR_OF_DAY)}-" +
+                    "${calendar.get(Calendar.MINUTE)}" )
+
+            this.calendar = calendar
         }
     }
 

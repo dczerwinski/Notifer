@@ -46,13 +46,16 @@ abstract class AlarmEntityDatabase: RoomDatabase() {
                         AlarmEntity(
                             "jeden",
                             "jeden",
-                            "2020-02-08-18-52-00"
+                            "2020-02-11-14-00-00"
                         ),
                         AlarmEntity(
                             "dwa",
                         "dwa",
-                        "2020-02-08-18-54-00"
-                        ))
+                        "2020-02-11-14-02-00"
+                        )
+
+
+                    )
                     Thread(Runnable {
                         alarmEntityDatabase.alarmDao().insertAllAlarms(list)
                     }).start()
